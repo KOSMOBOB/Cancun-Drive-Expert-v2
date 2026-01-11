@@ -9,6 +9,54 @@ import CancunPulse from './components/CancunPulse';
 import { Locale } from './types';
 import { INTERNAL_LINKS } from './constants';
 import { ALL_ARTICLES } from './content/articles'; // Импортируем нашу библиотеку
+import { pageMetadata } from './metadata';
+
+// Функция для обновления мета-тегов
+function updateMetaTags(path: string) {
+  const cleanPath = path.replace('#', '');
+  const metadata = pageMetadata[cleanPath] || {
+    title: 'Free Guide Mexico | Cancun Travel Guides',
+    description: 'Expert travel guides for Cancun and Riviera Maya.'
+  };
+  
+  // Обновляем title
+  document.title = metadata.title;
+  
+  // Обновляем description
+  let descMeta = document.querySelector('meta[name="description"]');
+  if (descMeta) {
+    descMeta.setAttribute('content', metadata.description);
+  } else {
+    descMeta = document.createElement('meta');
+    descMeta.setAttribute('name', 'description');
+    descMeta.setAttribute('content', metadata.description);
+    document.head.appendChild(descMeta);
+  }
+  
+  // Обновляем Open Graph title
+  let ogTitle = document.querySelector('meta[property="og:title"]');
+  if (ogTitle) {
+    ogTitle.setAttribute('content', metadata.title);
+  }
+  
+  // Обновляем Open Graph description
+  let ogDesc = document.querySelector('meta[property="og:description"]');
+  if (ogDesc) {
+    ogDesc.setAttribute('content', metadata.description);
+  }
+  
+  // Обновляем Twitter title
+  let twitterTitle = document.querySelector('meta[name="twitter:title"]');
+  if (twitterTitle) {
+    twitterTitle.setAttribute('content', metadata.title);
+  }
+  
+  // Обновляем Twitter description
+  let twitterDesc = document.querySelector('meta[name="twitter:description"]');
+  if (twitterDesc) {
+    twitterDesc.setAttribute('content', metadata.description);
+  }
+}
 
 const App: React.FC = () => {
   const getInitialPath = () => {
@@ -32,6 +80,11 @@ const App: React.FC = () => {
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+
+  // Update meta tags when path changes
+  useEffect(() => {
+    updateMetaTags(currentPath);
+  }, [currentPath]);
 
   const navigateTo = (path: string) => {
     const cleanPath = path.startsWith('/') ? path : `/${path}`;

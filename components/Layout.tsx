@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Locale } from '../types';
 import { SITE_NAME } from '../constants';
@@ -19,7 +18,7 @@ const Layout: React.FC<LayoutProps> = ({ children, locale, setLocale }) => {
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo(`/${locale}`)}>
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">C</div>
+            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">F</div>
             <span className="text-xl font-extrabold text-slate-900 tracking-tight">{SITE_NAME}</span>
           </div>
           

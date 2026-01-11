@@ -1,7 +1,6 @@
-
 import React from 'react';
 
-export const SITE_NAME = "Cancun Drive Expert";
+export const SITE_NAME = "Free Guide Mexico";
 
 export const AFFILIATE_DISCLOSURE_EN = "This article contains affiliate links. We may earn a commission if you book through them, at no extra cost to you. This helps us maintain the site and provide free travel advice.";
 export const AFFILIATE_DISCLOSURE_ES = "Este artículo contiene enlaces de afiliados. Podemos ganar una comisión si reservas a través de ellos, sin costo adicional para ti. Esto nos ayuda a mantener el sitio y ofrecer consejos de viaje gratuitos.";
