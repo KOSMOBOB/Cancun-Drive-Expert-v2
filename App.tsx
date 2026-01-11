@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Layout from './components/Layout';
 import ContentBlock from './components/ContentBlock';
 import AffiliateWidget from './components/AffiliateWidget';
@@ -8,14 +8,14 @@ import HeroImage from './components/HeroImage';
 import CancunPulse from './components/CancunPulse';
 import { Locale } from './types';
 import { INTERNAL_LINKS } from './constants';
+import { ALL_ARTICLES } from './content/articles'; // Импортируем нашу библиотеку
 
 const App: React.FC = () => {
-  // Инициализируем путь сразу из URL, чтобы избежать 404 при первой загрузке
   const getInitialPath = () => {
     let hash = window.location.hash.replace('#', '');
     if (!hash || hash === '/') return '/en';
     if (!hash.startsWith('/')) hash = '/' + hash;
-    return hash.replace(/\/$/, ''); // Убираем завершающий слеш
+    return hash.replace(/\/$/, '');
   };
 
   const [currentPath, setCurrentPath] = useState<string>(getInitialPath());
@@ -34,7 +34,6 @@ const App: React.FC = () => {
   }, []);
 
   const navigateTo = (path: string) => {
-    // Гарантируем, что путь начинается с / и не имеет двойных слешей
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
     window.location.hash = cleanPath;
   };
@@ -69,6 +68,38 @@ const App: React.FC = () => {
     </div>
   );
 
+  // Этот компонент теперь перехватывает клики по внутренним ссылкам
+  const ArticleContent: React.FC<{ content: string }> = ({ content }) => {
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      const contentEl = contentRef.current;
+      if (!contentEl) return;
+
+      const handleClick = (e: MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const anchor = target.closest('a');
+
+        // Ищем только внутренние ссылки, которые мы используем для навигации
+        if (anchor && anchor.href.includes('/#/')) {
+          e.preventDefault(); // Предотвращаем стандартное поведение браузера
+          const hash = anchor.hash;
+          if (hash) {
+            navigateTo(hash.substring(1)); // Используем нашу функцию навигации
+          }
+        }
+      };
+
+      contentEl.addEventListener('click', handleClick);
+
+      return () => {
+        contentEl.removeEventListener('click', handleClick);
+      };
+    }, [content]); // Пересоздаем слушатель при смене контента
+
+    return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
+  };
+
   const renderContent = () => {
     const p = currentPath;
 
@@ -95,52 +126,21 @@ const App: React.FC = () => {
         </ContentBlock>
       );
     }
-
-    // --- AIRPORT ---
-    if (p.includes('airport') || p.includes('aeropuerto')) {
-      return (
-        <ContentBlock title={locale === 'en' ? "Cancun Airport (CUN) Survival Guide" : "Guía Aeropuerto Cancún (CUN)"} locale={locale}>
-          <CancunPulse locale={locale} />
-          <p className="mb-6">{locale === 'en' ? 'The airport can be chaotic. Here is how to navigate Terminal 2, 3, and 4 to find your rental company.' : 'El aeropuerto puede ser caótico. Aquí te decimos cómo navegar las Terminales 2, 3 и 4.'}</p>
-          <AffiliateWidget locale={locale} />
-          <RelatedLinks currentLocale={locale} />
-        </ContentBlock>
-      );
-    }
-
-    // --- SAFETY / DRIVING TIPS ---
-    if (p.includes('driving-in-cancun') || p.includes('conducir-en-cancun') || p.includes('rules')) {
-      return (
-        <ContentBlock title={locale === 'en' ? "Safety & Driving Rules" : "Seguridad и Reglas de Tránsito"} locale={locale}>
-          <CancunPulse locale={locale} />
-          <p className="mb-6">{locale === 'en' ? 'From "Topes" to traffic police, here is everything you need to know about driving safely in Mexico.' : 'Desde los "Topes" hasta la policía de tránsito, aquí está todo lo que necesitas saber.'}</p>
-          <AffiliateWidget locale={locale} />
-          <RelatedLinks currentLocale={locale} />
-        </ContentBlock>
-      );
-    }
-
-    // --- TULUM / GAS STATIONS ---
-    if (p.includes('tulum') || p.includes('gasolineras') || p.includes('scams')) {
-      return (
-        <ContentBlock title={locale === 'en' ? "Tulum Drive & Gas Station Safety" : "Ruta a Tulum и Seguridad en Gasolineras"} locale={locale}>
-          <CancunPulse locale={locale} />
-          <p className="mb-6">{locale === 'en' ? 'The drive to Tulum is straightforward but requires knowing about gas station etiquette to avoid scams.' : 'El viaje a Tulum es sencillo pero requiere conocer el protocolo en las gasolineras.'}</p>
-          <AffiliateWidget locale={locale} />
-          <RelatedLinks currentLocale={locale} />
-        </ContentBlock>
-      );
-    }
-
-    // --- BEST COMPANIES ---
-    if (p.includes('best-car-rental') || p.includes('mejor-alquiler-autos')) {
-      return (
-        <ContentBlock title={locale === 'en' ? "Best Car Rental Companies 2025" : "Mejores Rentadoras de Autos 2025"} locale={locale}>
-          <CancunPulse locale={locale} />
-          <AffiliateWidget locale={locale} />
-          <RelatedLinks currentLocale={locale} />
-        </ContentBlock>
-      );
+    
+    // --- Динамический рендеринг статей из библиотеки ---
+    const pathParts = p.split('/');
+    if (pathParts.length > 2) {
+      const slug = pathParts[pathParts.length - 1];
+      const article = ALL_ARTICLES.find(a => a.slug === slug && a.locale === locale);
+      if (article) {
+        return (
+          <ContentBlock title={article.title} locale={locale}>
+            <ArticleContent content={article.content} />
+            <AffiliateWidget locale={locale} />
+            <RelatedLinks currentLocale={locale} />
+          </ContentBlock>
+        );
+      }
     }
 
     // --- LEGAL / ABOUT ---
@@ -158,7 +158,7 @@ const App: React.FC = () => {
     return (
       <div className="text-center py-32 px-4 max-w-2xl mx-auto">
         <h2 className="text-5xl font-black text-slate-900 mb-6 tracking-tighter">404</h2>
-        <p className="text-slate-500 mb-10">{locale === 'en' ? "Page not found." : "Página не encontrada."}</p>
+        <p className="text-slate-500 mb-10">{locale === 'en' ? "Page not found." : "Página не найдена."}</p>
         <button onClick={() => navigateTo(`/${locale}`)} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl hover:bg-blue-700">
           {locale === 'en' ? 'Back Home' : 'Inicio'}
         </button>
@@ -175,7 +175,7 @@ const App: React.FC = () => {
           <section className="relative overflow-hidden bg-slate-950 pt-20 pb-24 text-white">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
               <div className="relative z-10 order-2 lg:order-1">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-8">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/30 text-blue-400 text-xs font-bold uppercase tracking-[0.2em] mb-8">
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                   2025 Live Travel Guide
                 </div>
@@ -183,8 +183,8 @@ const App: React.FC = () => {
                   {locale === 'en' ? 'Drive Cancun With Confidence.' : 'Conduce por Cancún Con Confianza.'}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-5">
-                  <button onClick={() => navigateTo(`/${locale}/car-rental-cancun`)} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-center hover:bg-blue-500 transition-all">
-                    {locale === 'en' ? 'Explore Guide' : 'Ver Guía'}
+                  <button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-hub`)} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-center hover:bg-blue-500 transition-all">
+                    {locale === 'en' ? 'Explore Main Guide' : 'Explorar Guía Principal'}
                   </button>
                 </div>
               </div>

@@ -24,14 +24,14 @@ const Layout: React.FC<LayoutProps> = ({ children, locale, setLocale }) => {
           </div>
           
           <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-             <button onClick={() => navigateTo(`/${locale}/car-rental-cancun`)} className="hover:text-blue-600 transition-colors">
+             <button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-hub`)} className="hover:text-blue-600 transition-colors">
                {locale === 'en' ? 'Rental Guide' : 'Guía de Renta'}
              </button>
-             <button onClick={() => navigateTo(`/${locale}/car-rental-cancun-airport`)} className="hover:text-blue-600 transition-colors">
+             <button onClick={() => navigateTo(`/${locale}/guides/rent-a-car-cancun-airport-pickup-guide`)} className="hover:text-blue-600 transition-colors">
                {locale === 'en' ? 'Airport CUN' : 'Aeropuerto CUN'}
              </button>
-             <button onClick={() => navigateTo(`/${locale}/guides/driving-in-cancun`)} className="hover:text-blue-600 transition-colors">
-               {locale === 'en' ? 'Safety Tips' : 'Consejos'}
+             <button onClick={() => navigateTo(`/${locale}/guides/cancun-driving-laws-safety-guide`)} className="hover:text-blue-600 transition-colors">
+               {locale === 'en' ? 'Driving Rules' : 'Reglas de Tránsito'}
              </button>
           </nav>
 
@@ -65,7 +65,7 @@ const Layout: React.FC<LayoutProps> = ({ children, locale, setLocale }) => {
               <h4 className="text-white font-semibold mb-6 uppercase tracking-wider text-xs">Navigation</h4>
               <ul className="text-sm space-y-4">
                 <li><button onClick={() => navigateTo(`/${locale}/about`)} className="hover:text-white transition-colors">About Us</button></li>
-                <li><button onClick={() => navigateTo(`/${locale}/best-car-rental-cancun`)} className="hover:text-white transition-colors">Best Companies</button></li>
+                <li><button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-comparison-review`)} className="hover:text-white transition-colors">Best Companies</button></li>
               </ul>
             </div>
             <div>

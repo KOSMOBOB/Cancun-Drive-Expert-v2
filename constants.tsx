@@ -17,17 +17,17 @@ export const COMPLIANCE_CHECKLIST = [
 
 export const INTERNAL_LINKS = {
   en: [
-    { name: "Car Rental Cancun Guide", path: "/en/car-rental-cancun" },
-    { name: "Safe to Drive to Tulum?", path: "/en/guides/safe-to-drive-cancun-to-tulum" },
-    { name: "Airport CUN Survival Guide", path: "/en/car-rental-cancun-airport" },
-    { name: "Best Rental Companies 2025", path: "/en/best-car-rental-cancun" },
-    { name: "Essential Driving Rules", path: "/en/guides/driving-in-cancun" }
+    { name: "Ultimate Guide: Why Rent?", path: "/en/guides/cancun-car-rental-hub" },
+    { name: "Agency Comparison 2025", path: "/en/guides/cancun-car-rental-comparison-review" },
+    { name: "Driving Laws & Gas Scams", path: "/en/guides/cancun-driving-laws-safety-guide" },
+    { name: "Is Driving to Tulum Safe?", path: "/en/guides/driving-cancun-to-tulum-safety-guide" },
+    { name: "Airport CUN Survival Guide", path: "/en/guides/rent-a-car-cancun-airport-pickup-guide" },
   ],
   es: [
-    { name: "Guía Renta de Autos Cancún", path: "/es/alquiler-autos-cancun" },
-    { name: "Estafas en Gasolineras", path: "/es/guias/estafas-gasolineras-mexico" },
-    { name: "Guía Aeropuerto CUN", path: "/es/alquiler-autos-aeropuerto-cancun" },
-    { name: "Mejores Empresas 2025", path: "/es/mejor-alquiler-autos-cancun" },
-    { name: "Reglas de Tránsito", path: "/es/guias/conducir-en-cancun" }
+    { name: "Guía Central: ¿Por Qué Rentar?", path: "/es/guias/guia-central-renta-autos-cancun" },
+    { name: "Comparativa de Agencias 2025", path: "/es/guias/comparativa-renta-autos-cancun-resena" },
+    { name: "Leyes de Tránsito y Estafas", path: "/es/guias/guia-leyes-transito-seguridad-cancun" },
+    { name: "Manejar a Tulum ¿Es Seguro?", path: "/es/guias/es-seguro-manejar-cancun-tulum" },
+    { name: "Guía Aeropuerto CUN", path: "/es/guias/guia-renta-autos-aeropuerto-cancun-pickup" }
   ]
 };
