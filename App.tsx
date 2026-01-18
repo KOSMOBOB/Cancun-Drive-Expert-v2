@@ -56,6 +56,19 @@ function updateMetaTags(path: string) {
   if (twitterDesc) {
     twitterDesc.setAttribute('content', metadata.description);
   }
+
+  // --- CRITICAL SEO FIX: DYNAMIC CANONICAL TAG ---
+  let canonicalLink = document.querySelector('link[rel="canonical"]');
+  // NOTE: We use the production domain because canonicals are for search engines.
+  const canonicalUrl = `https://freeguidemexico.com/#${cleanPath}`; 
+  if (canonicalLink) {
+    canonicalLink.setAttribute('href', canonicalUrl);
+  } else {
+    canonicalLink = document.createElement('link');
+    canonicalLink.setAttribute('rel', 'canonical');
+    canonicalLink.setAttribute('href', canonicalUrl);
+    document.head.appendChild(canonicalLink);
+  }
 }
 
 const App: React.FC = () => {
@@ -69,6 +82,15 @@ const App: React.FC = () => {
   const [currentPath, setCurrentPath] = useState<string>(getInitialPath());
   const [locale, setLocale] = useState<Locale>(getInitialPath().startsWith('/es') ? 'es' : 'en');
 
+  // --- SAFE NAVIGATION FUNCTION ---
+  const navigateTo = (path: string) => {
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    // Only update hash if it's different to prevent redundant re-renders
+    if (window.location.hash !== `#${cleanPath}`) {
+      window.location.hash = cleanPath;
+    }
+  };
+
   useEffect(() => {
     const handleHashChange = () => {
       const path = getInitialPath();
@@ -78,18 +100,32 @@ const App: React.FC = () => {
     };
 
     window.addEventListener('hashchange', handleHashChange);
+    handleHashChange(); // Call on initial load to sync state
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
+  
+  // --- GLOBAL CLICK INTERCEPTOR ---
+  useEffect(() => {
+    const handleGlobalClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      const anchor = target.closest('a');
+
+      // Check if it's an internal hash-based link
+      if (anchor && anchor.getAttribute('href')?.startsWith('#/')) {
+        e.preventDefault(); // Prevent the browser's default navigation
+        const href = anchor.getAttribute('href')!;
+        navigateTo(href.substring(1)); // Use our safe navigation function
+      }
+    };
+    
+    document.addEventListener('click', handleGlobalClick);
+    return () => document.removeEventListener('click', handleGlobalClick);
+  }, []); // Empty dependency array means this runs only once
 
   // Update meta tags when path changes
   useEffect(() => {
     updateMetaTags(currentPath);
   }, [currentPath]);
-
-  const navigateTo = (path: string) => {
-    const cleanPath = path.startsWith('/') ? path : `/${path}`;
-    window.location.hash = cleanPath;
-  };
 
   const switchLocale = (newLocale: Locale) => {
     let newPath = currentPath;
@@ -97,7 +133,7 @@ const App: React.FC = () => {
       newPath = currentPath.replace('/en', '/es');
     } else if (newLocale === 'en' && currentPath.startsWith('/es')) {
       newPath = currentPath.replace('/es', '/en');
-    } else {
+    } else if (!currentPath.startsWith(`/${newLocale}`)) {
       newPath = `/${newLocale}`;
     }
     navigateTo(newPath);
@@ -108,49 +144,22 @@ const App: React.FC = () => {
       <h3 className="text-xl font-bold mb-6">{currentLocale === 'en' ? 'Keep Planning Your Trip' : 'Continúa Planeando tu Viaje'}</h3>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {INTERNAL_LINKS[currentLocale].map((link, idx) => (
-          <button 
+          <a 
             key={idx}
-            onClick={() => navigateTo(link.path)}
-            className="text-left p-5 rounded-2xl border border-slate-100 hover:border-blue-300 hover:bg-blue-50/50 transition-all group shadow-sm bg-white"
+            href={`#${link.path}`}
+            className="text-left p-5 rounded-2xl border border-slate-100 hover:border-blue-300 hover:bg-blue-50/50 transition-all group shadow-sm bg-white block"
           >
             <span className="text-sm font-bold text-slate-900 group-hover:text-blue-600 block mb-1">{link.name}</span>
             <span className="text-xs text-slate-400">{currentLocale === 'en' ? 'Local advice →' : 'Consejo local →'}</span>
-          </button>
+          </a>
         ))}
       </div>
     </div>
   );
 
-  // Этот компонент теперь перехватывает клики по внутренним ссылкам
   const ArticleContent: React.FC<{ content: string }> = ({ content }) => {
-    const contentRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-      const contentEl = contentRef.current;
-      if (!contentEl) return;
-
-      const handleClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement;
-        const anchor = target.closest('a');
-
-        // Ищем только внутренние ссылки, которые мы используем для навигации
-        if (anchor && anchor.href.includes('/#/')) {
-          e.preventDefault(); // Предотвращаем стандартное поведение браузера
-          const hash = anchor.hash;
-          if (hash) {
-            navigateTo(hash.substring(1)); // Используем нашу функцию навигации
-          }
-        }
-      };
-
-      contentEl.addEventListener('click', handleClick);
-
-      return () => {
-        contentEl.removeEventListener('click', handleClick);
-      };
-    }, [content]); // Пересоздаем слушатель при смене контента
-
-    return <div ref={contentRef} dangerouslySetInnerHTML={{ __html: content }} />;
+    // The global click handler now manages links within this component as well
+    return <div dangerouslySetInnerHTML={{ __html: content }} />;
   };
 
   const renderContent = () => {
@@ -212,9 +221,9 @@ const App: React.FC = () => {
       <div className="text-center py-32 px-4 max-w-2xl mx-auto">
         <h2 className="text-5xl font-black text-slate-900 mb-6 tracking-tighter">404</h2>
         <p className="text-slate-500 mb-10">{locale === 'en' ? "Page not found." : "Página не найдена."}</p>
-        <button onClick={() => navigateTo(`/${locale}`)} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl hover:bg-blue-700">
+        <a href={`#/${locale}`} className="inline-block bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold shadow-xl hover:bg-blue-700">
           {locale === 'en' ? 'Back Home' : 'Inicio'}
-        </button>
+        </a>
       </div>
     );
   };
@@ -236,9 +245,9 @@ const App: React.FC = () => {
                   {locale === 'en' ? 'Drive Cancun With Confidence.' : 'Conduce por Cancún Con Confianza.'}
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-5">
-                  <button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-hub`)} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-center hover:bg-blue-500 transition-all">
+                  <a href={`#/${locale}/guides/cancun-car-rental-hub`} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-center hover:bg-blue-500 transition-all">
                     {locale === 'en' ? 'Explore Main Guide' : 'Explorar Guía Principal'}
-                  </button>
+                  </a>
                 </div>
               </div>
               <div className="order-1 lg:order-2">

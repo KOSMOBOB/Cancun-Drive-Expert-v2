@@ -9,35 +9,32 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children, locale, setLocale }) => {
-  const navigateTo = (path: string) => {
-    window.location.hash = path.startsWith('/') ? path : `/${path}`;
-  };
-
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-16">
-          <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigateTo(`/${locale}`)}>
+          <a href={`#/${locale}`} className="flex items-center gap-2 cursor-pointer">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold">F</div>
             <span className="text-xl font-extrabold text-slate-900 tracking-tight">{SITE_NAME}</span>
-          </div>
+          </a>
           
           <nav className="hidden md:flex space-x-8 text-sm font-medium text-slate-600">
-             <button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-hub`)} className="hover:text-blue-600 transition-colors">
+             <a href={`#/${locale}/guides/cancun-car-rental-hub`} className="hover:text-blue-600 transition-colors">
                {locale === 'en' ? 'Rental Guide' : 'Guía de Renta'}
-             </button>
-             <button onClick={() => navigateTo(`/${locale}/guides/rent-a-car-cancun-airport-pickup-guide`)} className="hover:text-blue-600 transition-colors">
+             </a>
+             <a href={`#/${locale}/guides/rent-a-car-cancun-airport-pickup-guide`} className="hover:text-blue-600 transition-colors">
                {locale === 'en' ? 'Airport CUN' : 'Aeropuerto CUN'}
-             </button>
-             <button onClick={() => navigateTo(`/${locale}/guides/cancun-driving-laws-safety-guide`)} className="hover:text-blue-600 transition-colors">
+             </a>
+             <a href={`#/${locale}/guides/cancun-driving-laws-safety-guide`} className="hover:text-blue-600 transition-colors">
                {locale === 'en' ? 'Driving Rules' : 'Reglas de Tránsito'}
-             </button>
+             </a>
           </nav>
 
           <div className="flex items-center gap-4">
             <button 
               onClick={() => setLocale(locale === 'en' ? 'es' : 'en')}
               className="text-sm font-semibold px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-all shadow-sm"
+              aria-label={locale === 'en' ? 'Switch to Spanish language' : 'Cambiar a idioma inglés'}
             >
               {locale === 'en' ? 'Ver en Español 🇲🇽' : 'View in English 🇺🇸'}
             </button>
@@ -63,15 +60,15 @@ const Layout: React.FC<LayoutProps> = ({ children, locale, setLocale }) => {
             <div>
               <h4 className="text-white font-semibold mb-6 uppercase tracking-wider text-xs">Navigation</h4>
               <ul className="text-sm space-y-4">
-                <li><button onClick={() => navigateTo(`/${locale}/about`)} className="hover:text-white transition-colors">About Us</button></li>
-                <li><button onClick={() => navigateTo(`/${locale}/guides/cancun-car-rental-comparison-review`)} className="hover:text-white transition-colors">Best Companies</button></li>
+                <li><a href={`#/${locale}/about`} className="hover:text-white transition-colors">About Us</a></li>
+                <li><a href={`#/${locale}/guides/cancun-car-rental-comparison-review`} className="hover:text-white transition-colors">Best Companies</a></li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold mb-6 uppercase tracking-wider text-xs">Legal</h4>
               <ul className="text-sm space-y-4">
-                <li><button onClick={() => navigateTo(`/${locale}/privacy-policy`)} className="hover:text-white transition-colors">Privacy Policy</button></li>
-                <li><button onClick={() => navigateTo(`/${locale}/disclosure`)} className="hover:text-white transition-colors">Affiliate Disclosure</button></li>
+                <li><a href={`#/${locale}/privacy-policy`} className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href={`#/${locale}/disclosure`} className="hover:text-white transition-colors">Affiliate Disclosure</a></li>
               </ul>
             </div>
           </div>
