@@ -127,15 +127,62 @@ const App: React.FC = () => {
     updateMetaTags(currentPath);
   }, [currentPath]);
 
+  // Slug mapping for corresponding articles between languages
+  const SLUG_MAPPING: Record<string, string> = {
+    // Airport pickup guide
+    'rent-a-car-cancun-airport-pickup-guide': 'guia-renta-autos-aeropuerto-cancun-pickup',
+    'guia-renta-autos-aeropuerto-cancun-pickup': 'rent-a-car-cancun-airport-pickup-guide',
+    
+    // Comparison review
+    'cancun-car-rental-comparison-review': 'comparativa-renta-autos-cancun-resena',
+    'comparativa-renta-autos-cancun-resena': 'cancun-car-rental-comparison-review',
+    
+    // Hub/main guide
+    'cancun-car-rental-hub': 'guia-central-renta-autos-cancun',
+    'guia-central-renta-autos-cancun': 'cancun-car-rental-hub',
+    
+    // Driving laws and safety
+    'cancun-driving-laws-safety-guide': 'guia-leyes-transito-seguridad-cancun',
+    'guia-leyes-transito-seguridad-cancun': 'cancun-driving-laws-safety-guide',
+    
+    // Cancun to Tulum safety
+    'driving-cancun-to-tulum-safety-guide': 'es-seguro-manejar-cancun-tulum',
+    'es-seguro-manejar-cancun-tulum': 'driving-cancun-to-tulum-safety-guide'
+  };
+
   const switchLocale = (newLocale: Locale) => {
     let newPath = currentPath;
-    if (newLocale === 'es' && currentPath.startsWith('/en')) {
-      newPath = currentPath.replace('/en', '/es');
-    } else if (newLocale === 'en' && currentPath.startsWith('/es')) {
-      newPath = currentPath.replace('/es', '/en');
-    } else if (!currentPath.startsWith(`/${newLocale}`)) {
-      newPath = `/${newLocale}`;
+    
+    // Handle home pages
+    if (currentPath === '/en' || currentPath === '/en/car-rental-cancun') {
+      newPath = newLocale === 'es' ? '/es' : '/en';
+    } else if (currentPath === '/es' || currentPath === '/es/alquiler-autos-cancun') {
+      newPath = newLocale === 'es' ? '/es' : '/en';
+    } else {
+      // Handle article pages - use slug mapping
+      const pathParts = currentPath.split('/');
+      if (pathParts.length > 2) {
+        const currentSlug = pathParts[pathParts.length - 1];
+        const correspondingSlug = SLUG_MAPPING[currentSlug];
+        
+        if (correspondingSlug) {
+          newPath = `/${newLocale}/guides/${correspondingSlug}`;
+        } else {
+          // Fallback to home page if no mapping found
+          newPath = `/${newLocale}`;
+        }
+      } else {
+        // For other paths, just switch the locale prefix
+        if (newLocale === 'es' && currentPath.startsWith('/en')) {
+          newPath = currentPath.replace('/en', '/es');
+        } else if (newLocale === 'en' && currentPath.startsWith('/es')) {
+          newPath = currentPath.replace('/es', '/en');
+        } else if (!currentPath.startsWith(`/${newLocale}`)) {
+          newPath = `/${newLocale}`;
+        }
+      }
     }
+    
     navigateTo(newPath);
   };
 
