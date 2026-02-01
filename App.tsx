@@ -60,7 +60,13 @@ function updateMetaTags(path: string) {
   // --- CRITICAL SEO FIX: DYNAMIC CANONICAL TAG ---
   let canonicalLink = document.querySelector('link[rel="canonical"]');
   // NOTE: We use the production domain because canonicals are for search engines.
-  const canonicalUrl = `https://freeguidemexico.com/#${cleanPath}`; 
+  // Convert hash-based path to clean path for canonical URL
+  let cleanCanonicalPath = cleanPath.replace(/^\//, ''); // Remove leading slash
+  // Special handling for root path
+  if (cleanPath === '') {
+    cleanCanonicalPath = '';
+  }
+  const canonicalUrl = cleanCanonicalPath ? `https://freeguidemexico.com/${cleanCanonicalPath}` : 'https://freeguidemexico.com';
   if (canonicalLink) {
     canonicalLink.setAttribute('href', canonicalUrl);
   } else {
@@ -74,13 +80,17 @@ function updateMetaTags(path: string) {
 const App: React.FC = () => {
   const getInitialPath = () => {
     let hash = window.location.hash.replace('#', '');
-    if (!hash || hash === '/') return '/en';
+    if (!hash || hash === '/') return '/';
     if (!hash.startsWith('/')) hash = '/' + hash;
     return hash.replace(/\/$/, '');
   };
 
   const [currentPath, setCurrentPath] = useState<string>(getInitialPath());
-  const [locale, setLocale] = useState<Locale>(getInitialPath().startsWith('/es') ? 'es' : 'en');
+  const [locale, setLocale] = useState<Locale>(() => {
+    const initialPath = getInitialPath();
+    if (initialPath === '/') return 'en'; // Default to English for root path
+    return initialPath.startsWith('/es') ? 'es' : 'en';
+  });
 
   // --- SAFE NAVIGATION FUNCTION ---
   const navigateTo = (path: string) => {
@@ -95,7 +105,7 @@ const App: React.FC = () => {
     const handleHashChange = () => {
       const path = getInitialPath();
       setCurrentPath(path);
-      setLocale(path.startsWith('/es') ? 'es' : 'en');
+      setLocale(path === '/' ? 'en' : (path.startsWith('/es') ? 'es' : 'en'));
       window.scrollTo(0, 0);
     };
 
@@ -154,10 +164,10 @@ const App: React.FC = () => {
     let newPath = currentPath;
     
     // Handle home pages
-    if (currentPath === '/en' || currentPath === '/en/car-rental-cancun') {
-      newPath = newLocale === 'es' ? '/es' : '/en';
+    if (currentPath === '/' || currentPath === '/en' || currentPath === '/en/car-rental-cancun') {
+      newPath = newLocale === 'es' ? '/es' : '/';
     } else if (currentPath === '/es' || currentPath === '/es/alquiler-autos-cancun') {
-      newPath = newLocale === 'es' ? '/es' : '/en';
+      newPath = newLocale === 'es' ? '/es' : '/';
     } else {
       // Handle article pages - use slug mapping
       const pathParts = currentPath.split('/');
@@ -213,7 +223,7 @@ const App: React.FC = () => {
     const p = currentPath;
 
     // --- HOME / MAIN GUIDE ---
-    if (p === '/en' || p === '/en/car-rental-cancun') {
+    if (p === '/' || p === '/en' || p === '/en/car-rental-cancun') {
       return (
         <ContentBlock title="Cancun Car Rental: Safe & Fair Bookings 2025" locale="en">
           <CancunPulse locale="en" />
@@ -275,7 +285,7 @@ const App: React.FC = () => {
     );
   };
 
-  const isHomePage = currentPath === '/en' || currentPath === '/es' || currentPath === '/en/car-rental-cancun' || currentPath === '/es/alquiler-autos-cancun';
+  const isHomePage = currentPath === '/' || currentPath === '/en' || currentPath === '/es' || currentPath === '/en/car-rental-cancun' || currentPath === '/es/alquiler-autos-cancun';
 
   return (
     <Layout locale={locale} setLocale={switchLocale}>
@@ -288,9 +298,9 @@ const App: React.FC = () => {
                   <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
                   2025 Live Travel Guide
                 </div>
-                <h2 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
-                  {locale === 'en' ? 'Drive Cancun With Confidence.' : 'Conduce por Cancún Con Confianza.'}
-                </h2>
+                        <h1 className="text-5xl md:text-7xl font-black mb-8 tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400">
+                  {locale === 'en' ? 'Cancun Car Rental Guide' : 'Guía de Renta de Autos en Cancún'}
+                </h1>
                 <div className="flex flex-col sm:flex-row gap-5">
                   <a href={`#/${locale}/guides/cancun-car-rental-hub`} className="bg-blue-600 text-white px-10 py-5 rounded-2xl font-bold text-center hover:bg-blue-500 transition-all">
                     {locale === 'en' ? 'Explore Main Guide' : 'Explorar Guía Principal'}

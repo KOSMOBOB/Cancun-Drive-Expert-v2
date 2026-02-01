@@ -3,10 +3,11 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>https://freeguidemexico.com/en</loc>
+    <loc>https://freeguidemexico.com</loc>
     <lastmod>2026-01-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://freeguidemexico.com" />
     <xhtml:link rel="alternate" hreflang="es" href="https://freeguidemexico.com/es" />
   </url>
   
@@ -15,7 +16,8 @@
     <lastmod>2026-01-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://freeguidemexico.com/en" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://freeguidemexico.com" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://freeguidemexico.com/es" />
   </url>
   
   <url>
