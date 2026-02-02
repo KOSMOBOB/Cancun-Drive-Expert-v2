@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Locale } from '../types';
 
 interface AffiliateWidgetProps {
@@ -7,6 +7,22 @@ interface AffiliateWidgetProps {
 }
 
 const AffiliateWidget: React.FC<AffiliateWidgetProps> = ({ locale }) => {
+  useEffect(() => {
+    // Dynamically load the Getrentacar widget script
+    const script = document.createElement('script');
+    script.src = 'https://tp.media/content?campaign_id=222&promo_id=8813&shmarker=272338.FGM&trs=487797';
+    script.async = true;
+    script.charset = 'utf-8';
+    
+    // Add to head to ensure it loads properly
+    document.head.appendChild(script);
+    
+    // Cleanup function to remove script if component unmounts
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, []);
+  
   return (
     <div className="my-12 p-6 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -25,11 +41,8 @@ const AffiliateWidget: React.FC<AffiliateWidgetProps> = ({ locale }) => {
         </span>
       </div>
 
-      <div className="aspect-[16/9]">
-        <script
-          src="https://tp.media/content?campaign_id=222&promo_id=8813&shmarker=272338.FGM&trs=487797"
-          charSet="utf-8"
-        ></script>
+      <div id="getrentacar-widget-container" className="aspect-[16/9] w-full">
+        {/* Widget will be loaded here by the external script */}
       </div>
 
       <p className="mt-4 text-[10px] text-slate-400 text-center leading-tight">
