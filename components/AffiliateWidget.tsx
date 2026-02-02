@@ -9,14 +9,24 @@ const AffiliateWidget: React.FC<AffiliateWidgetProps> = ({ locale }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Check if script is already loaded globally to prevent duplicates
+    if ((window as any).getrentacarWidgetLoaded) {
+      console.log('Getrentacar widget already loaded globally, skipping duplicate');
+      return;
+    }
+    
     // Only proceed if we have a container reference
     if (!containerRef.current) return;
+
+    // Mark that the widget has been loaded
+    (window as any).getrentacarWidgetLoaded = true;
 
     // Create script element
     const script = document.createElement('script');
     script.src = 'https://tp.media/content?campaign_id=222&promo_id=8813&shmarker=272338.FGM&trs=487797';
     script.charset = 'utf-8';
     script.async = true;
+    script.id = 'getrentacar-widget-script'; // Add ID to identify the script
 
     // Add to the specific container
     containerRef.current.appendChild(script);
@@ -26,6 +36,13 @@ const AffiliateWidget: React.FC<AffiliateWidgetProps> = ({ locale }) => {
       // Remove the script and its potential content
       if (containerRef.current) {
         containerRef.current.innerHTML = '';
+      }
+      // Unmark that the widget has been loaded
+      (window as any).getrentacarWidgetLoaded = false;
+      // Also remove the script from document head if it exists there
+      const existingScript = document.getElementById('getrentacar-widget-script');
+      if (existingScript) {
+        existingScript.remove();
       }
     };
   }, []);
