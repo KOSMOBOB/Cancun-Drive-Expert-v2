@@ -2,12 +2,12 @@ import React from 'react';
 
 export const SITE_NAME = "Free Guide Mexico";
 
-export const AFFILIATE_DISCLOSURE_EN = "This article contains affiliate links. We may earn a commission if you book through them, at no extra cost to you. This helps us maintain the site and provide free travel advice.";
-export const AFFILIATE_DISCLOSURE_ES = "Este artículo contiene enlaces de afiliados. Podemos ganar una comisión si reservas a través de ellos, sin costo adicional para ti. Esto nos ayuda a mantener el sitio y ofrecer consejos de viaje gratuitos.";
+export const AFFILIATE_DISCLOSURE_EN = "We partner with Getrentacar to provide car rental comparison services. We may earn a commission if you book through our widget, at no extra cost to you. This helps us maintain the site and provide free travel advice.";
+export const AFFILIATE_DISCLOSURE_ES = "Somos socios de Getrentacar para proporcionar servicios de comparación de renta de autos. Podemos ganar una comisión si reservas a través de nuestro widget, sin costo adicional para ti. Esto nos ayuda a mantener el sitio y ofrecer consejos de viaje gratuitos.";
 
 export const COMPLIANCE_CHECKLIST = [
-  "No brand names in domain (e.g., NO 'discovercars-cancun.com')",
-  "No PPC/Brand Bidding on 'DiscoverCars' keywords",
+  "No brand names in domain (e.g., NO 'getrentacar-cancun.com')",
+  "No PPC/Brand Bidding on 'Getrentacar' keywords",
   "Affiliate disclosure visible on every monetized page",
   "Clear distinction from the official brand (Brand-safe tone)",
   "Content-first approach (Value before widget)",
